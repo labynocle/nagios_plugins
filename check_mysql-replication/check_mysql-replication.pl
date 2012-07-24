@@ -8,10 +8,10 @@
 #  replication threads and your lag synchronisation
 #
 #  Just want to thank Bartlomiej 'guzik' Syryjczyk,
-#  Brian Rudy, Leif Neland and Christoph Maser to help me
-#  to improve this little script
+#  Brian Rudy, Leif Neland, Christoph Maser and Peter Lecki
+#  to help me to improve this little script
 #
-#  Version : 0.2.4
+#  Version : 0.2.5
 #  -------------------------------------------------------
 #  In :
 #     - see the How to use section
@@ -63,6 +63,10 @@
 # ####################################################################
 # Changelog :
 # -----------
+#   Date:24/07/2012   Version:0.2.5     Author:Erwan Ben Souiden
+#   >> Little fix by Peter Lecki to return exit code 2 when lag value
+#   is null for lag action
+# --------------------------------------------------------------------
 #   Date:25/03/2010   Version:0.2.4     Author:Christoph Maser
 #   >> Add a little check if replication is up otherwise 
 #   $result->{Slave_IO_State} is undefined.
@@ -98,7 +102,7 @@ use Getopt::Long qw(:config no_ignore_case);
 
 # Generic variables
 # -----------------
-my $version = '0.2.4';
+my $version = '0.2.5';
 my $author = 'Erwan Labynocle Ben Souiden';
 my $a_mail = 'erwan@aleikoum.net';
 my $script_name = 'check_mysql-replication.pl';
@@ -231,7 +235,7 @@ if ($s_slave_sios eq 'Waiting for master to send event') {
 
             # now we can analyse
             $plugstate = "WARNING" if (($s_slave_sbm >= $warning) and ($s_slave_sbm < $critical));
-            $plugstate = "CRITICAL" if ($s_slave_sbm >= $critical);
+            $plugstate = "CRITICAL" if (($s_slave_sbm >= $critical) or ($s_slave_sbm eq ''));
 
             $return .= ' ; synchronized with '.$master_login.'@'.$master_address.':'.$master_port if ($more_value);
             $return .= ' | behindMaster='.$s_slave_sbm.'s' if ($perfdata_value);
