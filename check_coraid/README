@@ -1,0 +1,109 @@
+Nagios Check Coraid
+-------------------
+
+by Erwan Labynocle Ben Souiden (erwan@aleikoum.net) 
+
+Nagios Check Coraid is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.                                                                                
+Nagios Check Coraid is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with Nagios Check Coraid.  If not, see <http://www.gnu.org/licenses/>.
+
+
+This script is inspired on 'cec-chk-coraid.sh' by William A. Arlofski 
+(http://www.revpol.com/coraid_scripts).
+
+
+1 - Purpose
+-----------
+
+- an alternative way to check your Coraid Device
+- allow you to check : disks and raid state, if you still have spare disk
+  and so on... 
+- uses expect (http://expect.nist.gov/) and cec 
+  (ftp://ftp.alyseo.com/pub/partners/Coraid/Tools/) programs instead of Java 
+
+
+2 - Installation
+----------------
+
+First you have to install expect 
+	$ sudo apt-get install expect (adapt this command line to your distrib)
+and cec
+	just download the source and run the make command
+
+
+3 - Content
+-----------
+
+	check_coraid.pl : the main script. You will have to run only this 
+			  script
+
+	expect_scripts : this folder contains all the scripts which retrieve
+			 informations from the Coraid device.
+			 You never have to touch to this folder and its contain
+
+
+4 - Howto use
+-------------
+
+First you have to edit the following variables of check_coraid.pl 
+(Path variables) and adapt it to your configuration :
+	statedir : path to save expect scripts outputs
+	cec : path to cec program
+	expect : path to expect program
+	expect_script : path to expect_scripts folder
+
+Add the following entry to your sudoers file to have the good privileges to run
+the check_coraid.pl script :
+	nagios ALL=(ALL) NOPASSWD: /<path-to>/check_coraid.pl
+
+Then just run this command line to display help :
+	$ sudo /<path-to>/check_coraid.pl -h
+
+
+5 - Examples of use
+-------------------
+
+- To show all disks UP with extra information for the shelf 0 on the bond0 
+  interface
+$ sudo /<path-to>/check_coraid.pl -s 0 -a show -i bond0 -m
+CHECK CORAID - show - OK - (0.0,1000.205GB) (0.1,1000.205GB) (0.2,1000.205GB) (0.14,1000.205GB) are detected as UP - 4 disks UP
+
+- To show all spare disks with extra information for the shelf 0 on the 
+  bond0 interface
+$ sudo /<path-to>/check_coraid.pl -s 0 -a spare -i bond0 -m
+CHECK CORAID - spare - OK - (0.10,1000.205.GB) (0.11,1000.205GB) detected as SPARE - 2 disk(s) as SPARE
+
+
+6 - Examples of NRPE integration
+--------------------------------
+
+NRPE server configuration (typically /etc/nagios/nrpe_local.cfg) :
+command[check_coraid_spare]=/usr/bin/sudo /usr/local/nagios/libexec/check_coraid.pl -s 1 -i bond0 -p -a spare
+command[check_coraid_raid]=/usr/bin/sudo /usr/local/nagios/libexec/check_coraid.pl -s 1 -i bond0 -p -a raid
+command[check_coraid_show]=/usr/bin/sudo /usr/local/nagios/libexec/check_coraid.pl -s 1 -i bond0 -p -a show
+command[check_coraid_when]=/usr/bin/sudo /usr/local/nagios/libexec/check_coraid.pl -s 1 -i bond0 -p -a when
+
+Don't forget to restart the nrpe daemon : 
+$ sudo /etc/init.d/nagios-nrpe-server restart
+
+
+From your monitoring node, you only have to call the script just like this :
+$ /<path-to>/check_nrpe -H $host_ip -c check_coraid_spare 
+
+May be you have to specify a timeout value, in this case call the script like this :
+$ /<path-to>/check_nrpe -H $host_ip -c check_coraid_spare -t 15
+
+
+7- Info
+-------
+
+May be you have to adapt the except script to your config
+- may be you have to change the cec prompt start (depends of your coraid firmware)
+- in the same way the escape character could be different but according to the cec manpage with the -e option you can specify which character you will use to exit the cec command line interface... be aware !
