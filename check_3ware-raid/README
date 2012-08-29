@@ -1,0 +1,32 @@
+1 - What do I need to do to use it?
+-----------------------------------
+1 to use this script you have to install firt tw_cli. You can find the source here : http://www.3ware.com/support/download.asp just follow the instructions to compile and deploy it
+
+2 then you just have to run the following command :
+    $ ./check_3ware-raid.pl --help
+
+        If you need to use this script with NRPE you just have to do the following steps :
+
+        1 allow your user to run the script with the sudo rights. Just add
+        something like that in your /etc/sudoers (use visudo) :
+            nagios ALL=(ALL) NOPASSWD: /<path-to>/check_3ware-raid.pl
+        2 then just add this kind of line in your NRPE config file :
+            command[check_3ware]=/usr/bin/sudo /<path-to>/check_3ware-raid.pl
+
+3 don't forget to restart your NRPE daemon
+
+
+
+2 - How to use it?
+------------------
+
+$ ./check_3ware-raid.pl -P /usr/sbin/tw_cli -a unit_check -p -v -m
+DEBUG : action : unit_check, path-tw_cli : /usr/sbin/tw_cli
+DEBUG : check if /usr/sbin/tw_cli exists and is executable
+DEBUG : warning threshold : 1, critical threshold : 2
+DEBUG : controller :
+DEBUG : action = unit_check
+DEBUG : disk u0/type RAID-1/status OK
+DEBUG : disk u1/type RAID-1/status OK
+DEBUG : disk u2/type SPARE/status OK
+CHECK 3ware RAID - unit_check - OK - 3 unit(s) detected as OK - (u0,RAID-1,OK) (u1,RAID-1,OK) (u2,SPARE,OK) | unitOK=3 unitREBUILD=0 unitNOK=0
