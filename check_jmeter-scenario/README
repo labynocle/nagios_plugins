@@ -1,0 +1,16 @@
+1 - About the plugin
+--------------------
+This plugin is inspired by the work of Travis Noll (http://yoolink.to/eG3)
+
+This plugin is able to check a given JMX plan and to rise an alert if there is something wrong.
+You're now able to use a scenario to check if your web server is ok.
+
+To use it you'll need to have a jmeter plan, so:
+     How to create a jmeter plan : http://jakarta.apache.org/jmeter/usermanual/build-web-test-plan.html
+     Another how to in french : http://blog.milamberspace.net/index.php/jmeter-pages
+
+And to have the jmeter jar
+
+2 - How to use it
+-----------------
+./check_jmeter-scenario.pl -j /tmp/jakarta-jmeter-2.4/ -pl /tmp/scenario.jmx -l /tmp/log -p -D "CHECK_JMETER-SCENARIO - " -c 2 -w 1
