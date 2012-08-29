@@ -1,0 +1,13 @@
+1 - Requirement
+---------------
+To use it you first have to create an user with the REPLICATION CLIENT (or you can just grant this privilege)
+mysql> GRANT REPLICATION CLIENT  TO 'replicateur'@'localhost' IDENTIFIED BY 'password';
+
+/!\ It seems you need to add the SELECT privilege on mysql.* for older than 5.1 mysql version
+mysql> GRANT SELECT ON mysql.* TO 'replicateur'@'localhost';
+
+
+2 - How to use it
+-----------------
+
+... exemple coming soon ...
