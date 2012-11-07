@@ -125,7 +125,7 @@ my $expect_scripts = '/usr/local/NagiosCheckCoraid/expect_scripts/';
 
 # Generic variables
 # -----------------
-my $version = '0.1.3';
+my $version = '0.1.4';
 my $author = 'Erwan Labynocle Ben Souiden';
 my $a_mail = 'erwan@aleikoum.net';
 my $script_name = 'check_coraid.pl';
