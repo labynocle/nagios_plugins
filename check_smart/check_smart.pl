@@ -176,8 +176,14 @@ if ($return_code & 0x10) {
 	escalate_status('WARNING');
 }
 if ($return_code & 0x20) {
-	push(@error_messages, 'Disk may be close to failure');
-	escalate_status('WARNING');
+	if ($return_code == 32) {
+		# special case
+		warn "(debug) when exit code is 32, it means there was an alert during the past\n" if $opt_debug;
+	}
+	else {
+		push(@error_messages, 'Disk may be close to failure');
+		escalate_status('WARNING');
+	}
 }
 if ($return_code & 0x40) {
 	push(@error_messages, 'Error log contains errors');
