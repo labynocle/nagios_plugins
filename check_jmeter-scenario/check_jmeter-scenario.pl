@@ -11,7 +11,7 @@
 #  This plugin is inspired by the work of Travis Noll
 #  (http://yoolink.to/eG3)
 #
-#  Version : 0.1
+#  Version : 0.2
 #  -------------------------------------------------------
 #  In :
 #     - see the How to use section
@@ -19,7 +19,7 @@
 #  Out :
 #     - print on the standard output 
 #     - create a temporary file (if the result is NON-OK the temporary
-#	is kept) , specify the path tanks to the -l,--log parameter)
+#	is kept) , specify the path thanks to the -l,--log parameter)
 #
 #  Features :
 #     - perfdata output
@@ -61,6 +61,10 @@
 # -----------
 #
 # --------------------------------------------------------------------
+#   Date:22/01/2013   Version:0.2     Author:Erwan Ben Souiden
+#   >> use XML::LibXML to parse the result file
+#   perfdata now include the time to process the plan
+# --------------------------------------------------------------------
 #   Date:13/11/2010   Version:0.1     Author:Erwan Ben Souiden
 #   >> creation
 # ####################################################################
@@ -74,11 +78,13 @@ use strict;
 use warnings;
 use Carp;
 use Getopt::Long qw(:config no_ignore_case);
+#use Date::Manip;
+use XML::LibXML;
 use IPC::Open3;
 
 # Generic variables
 # -----------------
-my $version = '0.1';
+my $version = '0.2';
 my $author = 'Erwan Labynocle Ben Souiden';
 my $a_mail = 'erwan@aleikoum.net';
 my $script_name = 'check_jmeter-scenario.pl';
@@ -111,7 +117,7 @@ my $getoptret = GetOptions(
 );
 
 print_usage() if ($help_value);
-print_version() if ($version_value);
+print_verson() if ($version_value);
 
 # Syntax check of your specified options
 # --------------------------------------
@@ -176,15 +182,46 @@ if ($? || @errs) {
 	exit $ERRORS{$plugstate};
 }
 
-my $failure_count=`grep -c \"<failure>true</failure>\" $log`;
-my $error_count=`grep -c \"<error>true</error>\" $log`;
+my $parser = XML::LibXML->new();
+my ($start_time,$end_time) = (0,0);
+my ($failure_count,$error_count) = (0,0);
+my ($current_time,$current_test) = ('','');
+my $xmldoc = $parser->parse_file($log);
+for my $sample ($xmldoc->findnodes('testResults/httpSample')) {
 
-chomp ($failure_count);
-chomp ($error_count);
+	$current_time = $sample->getAttribute("ts");
+	$current_test = $sample->getAttribute("tn");
+
+	print 'DEBUG : analyzing test: '.$current_test.' - the test started at:'.$current_time."\n" if ($verbose_value);
+	    
+	if (! $start_time) {
+		$start_time = $current_time;
+	}
+	else {
+		$end_time = $current_time;
+	}
+    
+	for my $property ($sample->findnodes('./assertionResult/*')) {
+		if (($property->nodeName() eq 'failure') and ($property->textContent() eq 'true')) {
+			print 'DEBUG : failure detected during the following test: '.$current_test."\n" if ($verbose_value);
+			$failure_count++;
+		}
+		elsif (($property->nodeName() eq 'error') and ($property->textContent() eq 'true')) {
+			print 'DEBUG : error detected during the following test: '.$current_test."\n" if ($verbose_value);
+			$error_count++;
+		}
+		else {
+			# do nothing
+		}
+	}
+}
+
+my $time_spent = $end_time - $start_time;
 my $total_problem = int($error_count) + int($failure_count);
 
 print 'DEBUG : critical threshold: '.$critical.', warning threshold: '.$warning."\n" if ($verbose_value);
 print 'DEBUG : error_count: '.$error_count.', failure_count: '.$failure_count.' total problem: '.$total_problem."\n" if ($verbose_value);
+print 'DEBUG : test done in: '.$time_spent.'ms, start time: '.$start_time.', stop time: '.$end_time."\n" if ($verbose_value);
 $plugstate = 'WARNING' if ($total_problem >= $warning);
 $plugstate = 'CRITICAL' if ($total_problem >= $critical);
 
@@ -193,10 +230,12 @@ if ($plugstate eq "OK") {
 }
 else {
 	my $log_keep = $log.int(rand(10000));
-	`mv $log $log_keep`;
+	#`mv $log $log_keep`;
+    rename "$log", "$log_keep";
+    print 'DEBUG : state is No-OK, keep the log '.$log.' as '.$log_keep."\n" if ($verbose_value); 
 	$return = 'scenario not validated - error_count: '."$error_count".' / failure_count: '."$failure_count".' please check '.$log_keep.' for debug';
 }
-$return .= ' | total_problem='.$total_problem if ($perfdata_value);
+$return .= ' | timeSpent='.$time_spent.'ms' if ($perfdata_value);
 print $display.$plugstate.' - '.$return."\n";
 exit $ERRORS{$plugstate};
 
@@ -221,7 +260,7 @@ Options:
     To modify the output display... 
     default is "CHECK_JMETER-SCENARIO - "
  -p, --perfdata
-    If you want to activate the perfdata output
+    If you want to activate the perfdata output (display the time to process the plan - in ms)
  -v, --verbose
     Show details for command-line debugging (Nagios may truncate the output)
  -c, --critical=INT
