@@ -1,0 +1,28 @@
+Description
+-----------
+yet another plugin to check your ActiveMQ instance, by subscribing to a queue and sending and
+reading a message.
+
+How to use
+----------
+1 - create a ActiveMQ account for nagios, by editing conf/credentials.properties as following:
+        activemq.nagiosUsername=nagios
+        activemq.nagiosPassword=password1
+
+2 - create a monitoring queue, typically: /queue/nagios.TestQueue
+
+3 - then just run the script:
+        $ ./check_activeMQ.pl --help
+
+Example
+-------
+$ ./check_activeMQ.pl -H msg.mydomain.net -P 61615 -U 'nagios' -W 'password' -q '/queue/nagios.TestQueue' --ssl -t 5 -v
+DEBUG : data provided: nagios:password1@msg.mydomain.net:61615
+DEBUG : the activeMQ url is: msg.mydomain.net:61615 (over ssl) and the targeted queue is: /queue/nagios.TestQueue
+DEBUG : the activeMQ timeout: 5 second(s)
+DEBUG : trying to connect to msg.mydomain.net:61615...
+DEBUG : trying to authenticate with username: nagios and password: password...
+DEBUG : trying to send the following message into /queue/nagios.TestQueue: "this is a message for the Nagios Check - 2013-01-23T14:54:48"...
+DEBUG : trying to subscribe to /queue/nagios.TestQueue...
+DEBUG : receiving from /queue/nagios.TestQueue the following message: "this is a message for the Nagios Check - 2013-01-23T14:54:48"...
+CHECK ACTIVEMQ - OK - Message received
