@@ -186,7 +186,7 @@ $stomp->send_transactional(
 	  JMSType	=> "processTask",
 	  body 		=> "$activemq_mymsg",
 	} 
-) or die "$display impossible to send the message to the queue $activemq_queue";
+) or die "$display CRITICAL - impossible to send the message to the queue $activemq_queue\n";
 
 
 # Subscribe to the queue
@@ -212,15 +212,15 @@ if ( $can_read ) {
     
     #if ( $framebody eq "this is a message for the Nagios Check - $dt_now" ) {
     if ( $framebody eq $activemq_mymsg ) {
-        print "$display OK - Message received";
+        print "$display OK - Message received\n";
     }
     else {
-        print "$display WARNING - Incorrect message body; is \"$framebody\" and should be: \"$activemq_mymsg\"";
+        print "$display WARNING - Incorrect message body; is \"$framebody\" and should be: \"$activemq_mymsg\"\n";
         exit $ERRORS{"WARNING"};
     }
 }
 else {
-    print "$display CRITICAL - Timed out while trying to collect the message";
+    print "$display CRITICAL - Timed out while trying to collect the message\n";
     exit $ERRORS{"CRITICAL"};
 }
 
