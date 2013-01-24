@@ -270,7 +270,7 @@ Options:
     default is 5 seconds
  -D, --display=STRING
     To modify the output display... 
-    default is "CHECK ACTIVEMQ - "
+    default is "CHECK ACTIVEMQ -"
  -v, --verbose
     Show details for command-line debugging (Nagios may truncate the output)
     
