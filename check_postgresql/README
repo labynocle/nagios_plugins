@@ -1,0 +1,19 @@
+Description
+-----------
+A simple perl script to test if a PostgreSQL instance is up or not + to monitore the number of
+waiting queries
+
+
+How to use
+----------
+
+1 - create a special monitoring postgreSQL account
+       createuser -D -R -S -P nagios
+
+2 - don't forget to have a line like this one to your pg_hba.conf 
+       hostssl  all             all             0.0.0.0/0               password
+thus you can connect to your PostgreSQL instance for anywhere
+ 
+3 - run the script
+       $ ./check_postgresql.pl -h
+
