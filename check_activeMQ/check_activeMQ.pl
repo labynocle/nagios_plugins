@@ -240,7 +240,8 @@ sub print_usage() {
     print <<EOT;
 $script_name version $version by $author
 
-This plugin checks your mysql replication threads and your lag synchronisation
+Yet another plugin to check your ActiveMQ instance, by subscribing to a queue and sending 
+and reading a message.
 
 Usage: /<path-to>/$script_name -H activemq.mydomain.com -P 1234 -U nagios -W password1 --queue /test/Monitoring [-v] [--ssl] [-t 5] 
 
