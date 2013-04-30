@@ -11,7 +11,7 @@
 #  Brian Rudy, Leif Neland, Christoph Maser and Peter Lecki
 #  to help me to improve this little script
 #
-#  Version : 0.2.5
+#  Version : 0.2.6
 #  -------------------------------------------------------
 #  In :
 #     - see the How to use section
@@ -63,6 +63,9 @@
 # ####################################################################
 # Changelog :
 # -----------
+#   Date:30/04/2013   Version:0.2.6     Author:Erwan Ben Souiden
+#   >> Fix http://yoolink.to/DWq
+# --------------------------------------------------------------------
 #   Date:24/07/2012   Version:0.2.5     Author:Erwan Ben Souiden
 #   >> Little fix by Peter Lecki to return exit code 2 when lag value
 #   is null for lag action
@@ -191,7 +194,7 @@ unless (($action eq 'process') || ($action eq 'both') || ($action eq 'lag')) {
 # First we check if replication is Running
 my $result = &request_executor("$slave_address",$slave_port,$slave_login,$slave_pwd,"SHOW SLAVE STATUS");
 my $s_slave_sios = $result->{Slave_IO_State} || '';
-if ($s_slave_sios eq 'Waiting for master to send event') {
+if (($s_slave_sios eq 'Waiting for master to send event') or ($s_slave_sios eq 'Queueing master event to the relay log')) {
 
     my $flag = 0;
 
