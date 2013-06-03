@@ -20,7 +20,7 @@ DEBUG : logout successfull
 CHECK OVH Expiration - OK - 0 will expire in 2 days and 0 will expire in 3 days | critical=0 warning=0
 
 
-]$ ./check_ovhExpiration.pl -U 'bsXXXXX-ovh' -W 'plop' -c 30 -w 35 --verbose --perfdata
+$ ./check_ovhExpiration.pl -U 'bsXXXXX-ovh' -W 'plop' -c 30 -w 35 --verbose --perfdata
 DEBUG : data provided: bsXXXXX-ovh:plop
 DEBUG : warning threshold : 35, critical threshold : 30
 DEBUG : login successfull with bsXXXXX-ovh / plop
