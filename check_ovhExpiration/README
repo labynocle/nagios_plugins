@@ -1,0 +1,56 @@
+Description
+-----------
+a simple perl script to check if any of your OVH services/servers will expire soon
+
+How to use
+----------
+Just run the script as following to see the options and arguments
+    $ ./check_ovhExpiration.pl -h
+
+Example
+-------
+$ ./check_ovhExpiration.pl -U 'bsXXXXXXX-ovh' -W 'plop' -c 2 -w 3 --verbose --perfdata
+DEBUG : data provided: bsXXXXXXX-ovh:plop 
+DEBUG : warning threshold : 3, critical threshold : 2
+DEBUG : login successfull with bsXXXXXXX-ovh / plop
+DEBUG : success to retrieve data with the method billingGetReferencesToExpired
+DEBUG : the API returns 0 services/servers which will expire before 2 days
+DEBUG : the API returns 0 services/servers which will expire before 3 days
+DEBUG : logout successfull
+CHECK OVH Expiration - OK - 0 will expire in 2 days and 0 will expire in 3 days | critical=0 warning=0
+
+
+]$ ./check_ovhExpiration.pl -U 'bsXXXXX-ovh' -W 'plop' -c 30 -w 35 --verbose --perfdata
+DEBUG : data provided: bsXXXXX-ovh:plop
+DEBUG : warning threshold : 35, critical threshold : 30
+DEBUG : login successfull with bsXXXXX-ovh / plop
+DEBUG : success to retrieve data with the method billingGetReferencesToExpired
+DEBUG : the API returns 24 services/servers which will expire before 30 days
+DEBUG : the API returns 31 services/servers which will expire before 35 days
+DEBUG : nsUUUUUU.ovh.net // 2013-06-28 11:33:49 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-25 15:18:45 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-25 10:21:44 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-28 21:42:39 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-07-01 10:43:11 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-25 15:20:51 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-28 20:50:17 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-07-01 10:46:05 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-25 15:00:32 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-25 15:25:52 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-28 11:42:11 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-28 12:28:31 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-28 16:02:07 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-28 15:59:53 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-28 15:38:09 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-28 15:21:58 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-28 15:32:17 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-25 15:20:44 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-28 11:51:41 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-28 11:50:03 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-25 15:02:15 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-25 10:38:08 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-25 15:19:36 // dedicated
+DEBUG : nsUUUUUU.ovh.net // 2013-06-28 11:46:06 // dedicated
+DEBUG : the first thing which will expire: nsUUUUUU.ovh.net - 2013-06-25 10:21:44 - dedicated
+DEBUG : logout successfull
+CHECK OVH Expiration - CRITICAL - 24 will expire in 30 days and 31 will expire in 35 days the first thing, which will expire, is nsUUUUUU.ovh.net - 2013-06-25 10:21:44 | critical=24 warning=31
