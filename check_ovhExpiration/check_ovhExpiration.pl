@@ -9,7 +9,7 @@
 #
 # /!\ please be polite with the usage frequency of this script to avoid to saturate the OVH's API. /!\
 #
-#  Version : 0.1
+#  Version : 0.2
 #  -------------------------------------------------------
 #  In :
 #     - see the How to use section
@@ -55,6 +55,10 @@
 # -----------
 #
 # --------------------------------------------------------------------
+#   Date:11/06/2013   Version:0.2     Author:Erwan Ben Souiden
+#   >> add a new option for output
+#      + little fix for output
+# --------------------------------------------------------------------
 #   Date:03/06/2013   Version:0.1     Author:Erwan Ben Souiden
 #   >> creation
 # ####################################################################
@@ -71,12 +75,13 @@ use SOAP::Lite
 
 # Generic variables
 # -----------------
-my $version = '0.1';
+my $version = '0.2';
 my $author = 'Erwan Labynocle Ben Souiden';
 my $a_mail = 'erwan@aleikoum.net';
 my $script_name = 'check_ovhExpiration.pl';
 my $verbose_value = 0;
 my $version_value = 0;
+my $more_value = 0;
 my $help_value = 0;
 my $perfdata_value = 0;
 my $ovh_soapuri = "https://soapi.ovh.com/manager";
@@ -107,6 +112,8 @@ GetOptions (
 	'D=s' => \ $display,
 	'perfdata' => \ $perfdata_value,
 	'p' => \ $perfdata_value,
+	'more' => \ $more_value,
+	'm' => \ $more_value,
 	'v' => \ $verbose_value,
 	'verbose' => \ $verbose_value
 );
@@ -202,8 +209,12 @@ $plugstate = "WARNING" if ($how_many_warning >= 1);
 $plugstate = "CRITICAL" if ($how_many_critical >= 1);
 
 # format the output print
-my $return_print = $display." ".$plugstate." - ".$how_many_critical." will expire in ".$critical." days and ".$how_many_warning." will expire in ".$warning." days";
-$return_print .= " ".$return_sentence if ($return_sentence);
+my $return_print = $display." ".$plugstate." - ";
+$return_print .= $how_many_critical." services/servers will expire in ".$critical." days" if ($how_many_critical >= 1);
+$return_print .= " and " if (($how_many_warning >= 1) and ($how_many_critical >= 1));
+$return_print .= $how_many_warning." services/servers will expire in ".$warning." days" if ($how_many_warning >= 1);
+$return_print .= "nothing to renew soon" if ($plugstate eq "OK");
+$return_print .= " ".$return_sentence if (($return_sentence) and ($more_value));
 $return_print .= " | critical=$how_many_critical warning=$how_many_warning" if ($perfdata_value);
 
 print "$return_print\n";
@@ -221,7 +232,7 @@ A simple perl script to check if any of your OVH services/servers will expire so
 /!\\ please be polite with the usage frequency of this script to avoid to saturate the OVH's API. /!\\
 ----------------------------------------------------------------------------------------------------
 
-Usage: /<path-to>/$script_name -U bsXXXX-ovh -W password [-c 10] [-w 20] [-D "CHECK OVH Expiration -"]
+Usage: /<path-to>/$script_name -U bsXXXX-ovh -W password [-c 10] [-w 20] [-D "CHECK OVH Expiration -"] [-m]
 
 Options:
  -h, --help
@@ -242,6 +253,9 @@ Options:
     Specify a warning threshold
     Number of days before expiration
     default is 20
+ -m, --more
+    To have a longer output
+    by default this option is disabled
  -p, --perfdata
     If you want to activate the perfdata output
  -D, --display=STRING
