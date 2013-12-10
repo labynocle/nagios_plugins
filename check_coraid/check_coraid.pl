@@ -7,7 +7,7 @@
 #  Description : an alternative way to check your Coraid
 #  		 Device for Nagios
 #
-#  Version : 0.1.4
+#  Version : 0.1.5
 #  -------------------------------------------------------
 #  In :
 #     - see the How to use section 
@@ -82,6 +82,11 @@
 # Changelog :
 # -----------
 #
+# --------------------------------------------------------------------
+#   Date:12/09/2013   Version:0.1.5     Author:Tim Gerk
+#   >> improvements
+#	- a recovering array given WARNING status, rather than CRITICAL
+# - verbose output reports percentage recovered
 # --------------------------------------------------------------------
 #   Date:11/06/2011   Version:0.1.4     Author:Randall Whitman
 #   >> improvements
@@ -335,13 +340,15 @@ elsif ($action eq 'raid') {
 
 			$plugstate = "WARNING" if ($4=~/offline/);
                 }
-		elsif ($_=~/^\s*?(\S+)\s+(\S+GB)\s+(raid\S+|update)\s+(.*)/) {
+		elsif ($_=~/^\s*?(\S+)\s+(\S+GB)\s+(raid\S+|update)\s+(.*?)\s*$/) {
                         print "DEBUG : idraid $1 / size $2 / $3 / $4\n" if ($verbose_value);
-                        $retour .= "$3) ";
+                        $retour .= "$3";
+			$retour .= ",$4" if ($4);
+			$retour .= ") ";
 			$retour .= " composed by " if ($more_value);
 			
 			# state : initing | recovering | degraded | failed | normal
-			$plugstate = "CRITICAL" if ($4=~/failed|degraded/);
+			$plugstate = "CRITICAL" if ($4=~/failed|(!?<recovering,)degraded/);
 			$plugstate = "WARNING" if (($4=~/initing|recovering/) && ($plugstate ne 'CRITICAL'));
                 }
 		elsif ($_=~/^\s*?(\S+)\s+(\S+)\s+(\S+GB)\s+(\S+)/) {
@@ -464,13 +471,13 @@ Options:
     when : display the number of disks in a initing or recovering state.
            a warning alarm will be generated if there is one or more disks 
            detected
-    raid : display every lblades and their informations (size, raid type)
+    raid : display every lblades and their informations (size, raid type, recovery status)
            a warning alarm will be generated if 
                             the lblade is offline
                             the raid is in a initing or recovering state
                             lblade disks are in a replaced state
            a critical alarm will be generated if
-                            the raid is in a failed or degraded state
+                            the raid is in a failed or degraded (but not recovering) state
                             lblade disks are in a failed or missing state
  -i, --interface=STRING
 	specify the interface which communicates with the CORAID
