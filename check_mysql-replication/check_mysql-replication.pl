@@ -105,7 +105,7 @@ use Getopt::Long qw(:config no_ignore_case);
 
 # Generic variables
 # -----------------
-my $version = '0.2.5';
+my $version = '0.2.6';
 my $author = 'Erwan Labynocle Ben Souiden';
 my $a_mail = 'erwan@aleikoum.net';
 my $script_name = 'check_mysql-replication.pl';
