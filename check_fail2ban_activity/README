@@ -53,6 +53,8 @@ Options:
     If you want to activate the perfdata output
  -v, --verbose
     Show details for command-line debugging (Nagios may truncate the output)
+ -x, --exclude=STRING
+    Comma-separated list of jails to exclude when checking all jails
 
 Example
 -------
