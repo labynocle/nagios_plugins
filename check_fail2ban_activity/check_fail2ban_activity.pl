@@ -108,6 +108,7 @@ my ($critical,$warning) = (2,1);
 my $fail2ban_client_path = '/usr/bin/fail2ban-client';
 my $fail2ban_socket = '';
 my $jail_specific = '';
+my $jail_exclude = '';
 
 GetOptions (
     'P=s' => \ $fail2ban_client_path,
@@ -130,7 +131,9 @@ GetOptions (
     'perfdata' => \ $perfdata_value,
     'p' => \ $perfdata_value,
     'v' => \ $verbose_value,
-    'verbose' => \ $verbose_value
+    'verbose' => \ $verbose_value,
+    'x=s' => \ $jail_exclude,
+    'exclude=s' => \ $jail_exclude
 );
 
 print_usage() if ($help_value);
@@ -202,10 +205,12 @@ else {
     }
 
     foreach (@jail_list) {
-        $how_many_jail ++;
-
         my $jail_name = $_;
         $jail_name =~ tr/ //ds;
+
+        next if (grep(/$jail_name/, split(/,/,$jail_exclude)));
+
+        $how_many_jail ++;
 
         my $current_ban_number = currently_ban("$fail2ban_cmd","$jail_name");
         if ($current_ban_number == -1) {
